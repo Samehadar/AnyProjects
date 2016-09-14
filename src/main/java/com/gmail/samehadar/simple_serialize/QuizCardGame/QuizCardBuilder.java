@@ -12,6 +12,7 @@ import java.util.ArrayList;
 
 /**
  * Create card
+ * //TODO:: создается пустая строка со слэшем, фикс
  */
 public class QuizCardBuilder {
 
@@ -105,7 +106,7 @@ public class QuizCardBuilder {
         }
     }
 
-    private void ClearCard() {
+    private void clearCard() {
         questionArea.setText("");
         answerArea.setText("");
         questionArea.requestFocus();
@@ -116,13 +117,13 @@ public class QuizCardBuilder {
             BufferedWriter writer = new BufferedWriter(new FileWriter(file));
 
             for (QuizCard card: cardList) {
-                writer.write(card.getQustion() + '/');
+                writer.write(card.getQuestion() + '/');
                 writer.write(card.getAnswer() + '\n');
             }
             writer.close();
 
         } catch (IOException e) {
-            
+
             e.printStackTrace();
         }
     }
