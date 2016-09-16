@@ -5,6 +5,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.*;
 import java.util.ArrayList;
 
 /**
@@ -55,6 +56,14 @@ public class BeatBox {
         JButton downTemp = new JButton("Tempo down");
         downTemp.addActionListener(new MyDownTempoListener());
         buttonBox.add(downTemp);
+
+        JButton saveTrack = new JButton("Save Track");
+        saveTrack.addActionListener(new MySendListener());
+        buttonBox.add(saveTrack);
+
+        JButton openTrack = new JButton("Open Track");
+        openTrack.addActionListener(new MyReadListener());
+        buttonBox.add(openTrack);
 
         Box nameBox = new Box(BoxLayout.Y_AXIS);
         for (int i = 0; i < instrumentNames.length; i++) {
@@ -166,6 +175,43 @@ public class BeatBox {
         }
     }
 
+    public class MySendListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            boolean[] checkboxState = new boolean[256];
+            for (int i = 0; i < checkboxState.length; i++) {
+                JCheckBox check = checkboxList.get(i);
+                if (check.isSelected()) {
+                    checkboxState[i] = true;
+                }
+            }
+            JFileChooser fileChooser = new JFileChooser("C:\\Users\\User\\IdeaProjects\\AnyProjects\\src\\main\\resources");
+            fileChooser.showSaveDialog(theFrame);
+            saveFile(fileChooser.getSelectedFile(), checkboxState);
+        }
+    }
+
+    public class MyReadListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            JFileChooser fileChooser = new JFileChooser("C:\\Users\\User\\IdeaProjects\\AnyProjects\\src\\main\\resources");
+            fileChooser.showOpenDialog(theFrame);
+            boolean[] checkboxState = (boolean[]) openFile(fileChooser.getSelectedFile());
+
+            for (int i = 0; i < checkboxState.length; i++) {
+                JCheckBox checkBox = checkboxList.get(i);
+                if (checkboxState[i]) {
+                    checkBox.setSelected(true);
+                } else {
+                    checkBox.setSelected(false);
+                }
+            }
+
+            sequencer.stop();
+            buildTrackAndStart();
+        }
+    }
+
     public void makeTracks(int[] trackList) {
         for (int i = 0; i < trackList.length; i++) {
             int instrument = trackList[i];
@@ -189,6 +235,29 @@ public class BeatBox {
         return event;
     }
 
+    private void saveFile(File file, Object saveObject) {
+        try {
+            FileOutputStream fileOutputStream = new FileOutputStream(file);
+            ObjectOutputStream outputStream = new ObjectOutputStream(fileOutputStream);
+            outputStream.writeObject(saveObject);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
+    private Object openFile(File file) {
+        Object result = null;
+        try {
+            FileInputStream fileInputStream = new FileInputStream(file);
+            ObjectInputStream inputStream = new ObjectInputStream(fileInputStream);
+            result = inputStream.readObject();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            System.out.println("Can't deser object: " + file.getAbsolutePath());
+        }
+        return result;
+    }
 
 }
