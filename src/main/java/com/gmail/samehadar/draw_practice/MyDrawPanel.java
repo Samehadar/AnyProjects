@@ -4,7 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
- * Print image
+ * Print image from resource
  */
 public class MyDrawPanel extends JPanel {
 
